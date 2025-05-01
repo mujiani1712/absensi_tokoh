@@ -40,6 +40,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        //baru di tambah
+        'karyawan'=>[
+            'driver' => 'session',
+            'provider' => 'karyawans',
+        ]
     ],
 
     /*
@@ -64,6 +70,12 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
+        //BARU DI TAMBAH
+        'karyawans' => [
+            'driver' => 'eloquent',
+            'model' =>  App\Models\karyawan::class,
+        ],
+
 
         // 'users' => [
         //     'driver' => 'database',
