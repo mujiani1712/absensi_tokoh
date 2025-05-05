@@ -6,28 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('absens', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            
+
+            
+            
+            
             $table->string('tipe'); // masuk / pulang
-            $table->text('foto'); // path foto
+            $table->text('foto');   // path foto
             $table->string('lokasi');
             $table->string('jam');
             $table->timestamps();
 
-            //Foreign key ke users
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // Tambahkan foreign key setelah deklarasi kolom user_id
+            $table->foreign('user_id')->references('id')->on('karyawans')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('absens');

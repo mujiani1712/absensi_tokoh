@@ -55,33 +55,72 @@
             <img id="previewFoto" src="" width="320" height="240" style="display: none; margin-top: 10px; border: 2px solid #ccc;" /> <!-- untuk pengambil cekrek foto -->
 
              <!-- Tombol Ambil Foto (muncul setelah kamera aktif) -->
-    <button type="button" id="btnAmbilFoto" onclick="ambilFoto()" style="display: none;" class="btn btn-primary mt-2">
-        Ambil Foto
-    </button>
+            <button type="button" id="btnAmbilFoto" onclick="ambilFoto()" style="display: none;" class="btn btn-primary mt-2">
+                Ambil Foto
+            </button>
         </div>
 
         <!-- Form Absen -->
         <form id="absenForm" method="POST" action="{{ route('absensi.store') }}">
-            @csrf
+         @csrf
+             <!-- Input tersembunyi untuk dikirim ke server -->
             <input type="hidden" name="tipe" id="tipe">
             <input type="hidden" name="foto" id="foto">
             <input type="hidden" name="lokasi" id="lokasi">
-            <input type="hidden" name="jam" id="jam"> <!-- Tambahkan baris ini -->
-            <button type="submit" id="btnSubmit" style="display: none;">Kirim Absen</button>
+            <input type="hidden" name="jam" id="jam">
+
+            <button type="submit" id="btnSubmit" style="margin-top: 10px;">Kirim Absen</button>
+
         </form>
 
         <!-- Menampilkan hasil session jika ada -->
+        {{-- 
         @if (session('data'))
         <div class="mt-4">
-            <h4>Data Absen</h4>
+
+           <h4>Data Absen</h4>
             <p>Tipe: {{ session('data')['tipe'] }}</p>
             <p>Foto URL: {{ session('data')['foto'] }}</p> <!-- yg ini baru di tambah -->
             
             <img src="{{ session('data')['foto'] }}" width="200" onerror="this.style.border='3px solid red'; alert('Gagal load gambar!')">  <!--ini baru di tambah setelah 200 -->
             <p>Lokasi: {{ session('data')['lokasi'] }}</p>
             <p>Jam: {{ session('data')['jam'] }}</p> 
+        
+            --}}
+
+            <!-- Tampilkan riwayat absen dari database -->
+        @if (isset($absensi_terakhir) && count($absensi_terakhir) > 0)
+            <h4 class="mt-5">Riwayat Absen Terakhir</h4>
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>Tipe</th>
+                        <th>Foto</th>
+                        <th>Lokasi</th>
+                        <th>Jam</th>
+                        <th>Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($absensi_terakhir as $absen)
+                        <tr>
+                            <td>{{ $absen->tipe }}</td>
+                            <td>
+                                <img src="{{ asset($absen->foto) }}" width="100" onerror="this.style.border='3px solid red';">
+                            </td>
+                            <td>{{ $absen->lokasi }}</td>
+                            <td>{{ $absen->jam }}</td>
+                            <td>{{ $absen->created_at->format('d-m-Y H:i:s') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
+       {{--    
         </div>
         @endif
+        --}} 
     </div>
 </div>
 @endsection
@@ -103,19 +142,10 @@
         }
     }
 
- // window.onload = async function () {
-  //      try {
-   //         stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  //          document.getElementById('video').srcObject = stream;
-   //     } catch (err) {
-   //         alert("Gagal mengakses kamera: " + err.message);
-    //    }
-   // }
-
+ 
     function capturePhoto(tipe) {
         currentTipe = tipe;
        startCamera();
-    //  tipeAbsen = tipe; // ganti ini sementara
 
         // Tampilkan tombol untuk ambil foto
         document.getElementById('btnAmbilFoto').style.display = 'inline-block';
@@ -130,7 +160,6 @@
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataURL = canvas.toDataURL('image/png');
 
-      //  document.getElementById('foto').value = dataURL;
         document.getElementById('foto').value = dataURL;
         // Tampilkan preview foto yang sudah diambil
         document.getElementById('previewFoto').src = dataURL;
@@ -155,11 +184,9 @@
 
             // Setelah ambil foto, tampilkan tombol submit
             document.getElementById('btnSubmit').style.display = 'inline-block';
-        }, function (error) {
-            alert("Gagal mendapatkan lokasi: " + error.message);
-        });
+            }, function (error) {
+                alert("Gagal mendapatkan lokasi: " + error.message);
+            });
     }
-</script>
-
-
+    </script>
 @endsection

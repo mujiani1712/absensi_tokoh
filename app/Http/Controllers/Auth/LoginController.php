@@ -27,6 +27,7 @@ class LoginController extends Controller
 
         if ($karyawan && Hash::check($credentials['password'], $karyawan->password)) {
             // Simpan data login manual di session (kalau belum pakai Auth bawaan Laravel)
+            
             session(['karyawan_id' => $karyawan->id]);
            return redirect()->route('dashboard'); // arahkan ke halaman utama
         }

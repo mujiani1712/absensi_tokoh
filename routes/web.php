@@ -8,10 +8,22 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\AprovalController;
+use App\Http\Controllers\CutiController;
+use App\Http\Controllers\IzinController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/logout', function () {
+    session()->forget('karyawan_id');
+    return redirect()->route('login');
+})->name('logout');
+
+
+
+
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -29,6 +41,12 @@ Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absens
 //Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
 //Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
 
+Route::get('/aproval', [AprovalController::class, 'index'])->name('aproval');
+
+Route::get('/izin', [IzinController::class, 'index'])->name('aproval.izin');
+Route::get('/cuti', [CutiController::class, 'index'])->name('aproval.cuti');
+
+
 
 
 
@@ -36,7 +54,7 @@ Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absens
 
 Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
+Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 
 // Auth
 Route::get('/register', [RegisterController::class, 'showForm'])->name('register');

@@ -14,30 +14,19 @@ class AbsensiController extends Controller
     // Menampilkan halaman index absensi
     public function index()
     {
-       // $absensi = Absensi::where('user_id', Auth::id())->latest()->get();
-        
         // Mengambil data absen masuk dan pulang dari session
         $absenMasuk = session('absenMasuk');
         $absenPulang = session('absenPulang');
 
 
-
-      //  $userId = session('karyawan_id');
-    //$karyawan = \App\Models\Karyawan::find($userId); // ambil nama
-
-
-
-
-
-          // Ambil semua riwayat absensi milik user yang sedang login
-       // $riwayat = Absensi::where('user_id', Auth::id())
-       // ->orderBy('created_at', 'desc')
-       // ->get();
-
-      //  $absensiTerakhir = Absensi::where('user_id', Auth::id())->latest()->first();
+        $userId = session('karyawan_id');
+        $absensi_terakhir = Absensi::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
 
         // Mengirim data ke view absensi.index
-        return view('absensi.index', compact('absenMasuk', 'absenPulang', ));
+        return view('absensi.index', compact('absenMasuk', 'absenPulang', 'absensi_terakhir' ));
     }
 
     // Menyimpan data absensi dari form
@@ -45,17 +34,17 @@ class AbsensiController extends Controller
     {
         // ✅ Validasi input dari form
         $request->validate([
-            'tipe' => 'required|in:masuk,pulang',        // jenis absen
+            'tipe' => 'required|in:masuk,pulang',        
             'foto' => 'required',                         // base64 image
-            'lokasi' => 'required',                      // lokasi GPS
-            'jam' => 'required',                         // waktu absen
+            'lokasi' => 'required',                    
+            'jam' => 'required',                        
             
         ]);
     
-        // ✅ Pastikan folder penyimpanan gambar
+        //  folder penyimpanan gambar
         $folderPath = public_path('uploads/foto_absen');
         if (!file_exists($folderPath)) {
-            mkdir($folderPath, 0775, true); // Buat folder jika belum ada
+            mkdir($folderPath, 0775, true); 
         }
     
         // ✅ Proses simpan foto dari base64
@@ -71,26 +60,22 @@ class AbsensiController extends Controller
         $publicPath = 'uploads/foto_absen/' . $filename;
 
 
-
-        //baru di tambah 
+        // baru di tambah
         
-       // Absensi ::create([
-         //   'user_id' => $userId,
-           // 'tipe' => $request->tipe,
-           // 'foto' => $publicPath,
-            //'lokasi' => $request->lokasi,
-            //'jam' => $request->jam,
-        //]);
+        $karyawanId = session('karyawan_id');
+        if ($karyawanId) {
+            Absensi::create([
+                'user_id' => $karyawanId,
+                'tipe' => $request->tipe,
+                'foto' => $publicPath,
+                'lokasi' => $request->lokasi,
+                'jam' => $request->jam,
+            ]);
+        }
 
-
-
-
-
-        // ✅ Siapkan data absen untuk disimpan sementara di session
+        // Simpan ke session agar bisa ditampilkan
         $absenData = [
             'tipe' => $request->tipe,
-          //  'foto' => $filePath,     // URL foto untuk ditampilkan di halaman
-           // 'foto' => url($filePath), // baru di ganti
             'foto' => asset('uploads/foto_absen/' . $filename), //  BENAR, ini URL relatif dari folder public
             'lokasi' => $request->lokasi,
             'jam' => $request->jam,
@@ -103,29 +88,6 @@ class AbsensiController extends Controller
         } else {
             session(['absenPulang' => $absenData]);
         }
-
-        // Simpan ke database
-       // $user = session('karyawan');
-       // if (!$user || !isset($user['id'])) {
-        //    return redirect()->route('login')->with('error', 'Session tidak valid. Silakan login ulang.');
-       // }
-
-       // Absensi::create([
-         //   'user_id' => $user['id'], // Ambil dari session
-           // 'tipe' => $request->tipe,
-           // 'foto' => 'uploads/foto_absen/' . $filename, // simpan path relatif, bukan path penuh
-           // 'lokasi' => $request->lokasi,
-           // 'jam' => $request->jam,
-        //]);
-      //  Absensi::create([
-        //    'user_id' => Auth::id(),       // ← user login
-       //     'tipe' => $request->tipe,
-        //    'foto' => $filePath,
-        //    'lokasi' => $request->lokasi,
-         //   'jam' => $request->jam,
-        //]);
-
-       
     
         
         // ✅ Kembalikan ke halaman absensi dengan flash session

@@ -19,8 +19,15 @@ class Absensi extends Model
         'lokasi',
         'jam',
     ];
-    public function user()
+  //  public function user()
+   // {
+    //    return $this->belongsTo(User::class);
+    //}
+
+    //baru di tambah
+        public function karyawan()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Karyawan::class, 'user_id');
     }
+
 }
